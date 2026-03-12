@@ -1,0 +1,17 @@
+
+*.pth
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+
+# YOLO
+*.pt
+runs/
+
+# OS
+.DS_Store
+Thumbs.db
