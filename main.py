@@ -1,6 +1,7 @@
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from fastapi import Request
 from ultralytics import YOLO
 from PIL import Image
@@ -9,13 +10,14 @@ import json
 from model import load_efficientnet, load_prices, classify_crop
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
-print("Uploading Model...")
+print("Model was uploading...")
 efficientnet = load_efficientnet()
 prices = load_prices()
-yolo = YOLO('yolov8n.pt')  
-print("Model was uploaded!")
+yolo = YOLO('yolov8n.pt')
+print("Models loaded!")
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
@@ -23,11 +25,9 @@ async def home(request: Request):
 
 @app.post("/detect")
 async def detect(file: UploadFile = File(...)):
-    
     contents = await file.read()
     image = Image.open(io.BytesIO(contents)).convert('RGB')
 
-    
     results = yolo(image, conf=0.3)
     boxes = results[0].boxes
 
